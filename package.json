@@ -1,0 +1,27 @@
+{
+  "name": "to-changelog",
+  "version": "0.1.0",
+  "description": "Transfer git log to changelog",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/winjeysong/to-changelog.git"
+  },
+  "keywords": [
+    "git",
+    "log",
+    "changelog"
+  ],
+  "author": "winjeysong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/winjeysong/to-changelog/issues"
+  },
+  "homepage": "https://github.com/winjeysong/to-changelog#readme",
+  "dependencies": {
+    "shelljs": "^0.8.3"
+  }
+}
