@@ -4,8 +4,9 @@ const flattenDeep = require('lodash.flattendeep');
 
 const { H1, H2, H3, H4, H5, H6 } = require('./md-syntax').H;
 const types = require('./types');
+const cfg = require('./readConfig');
 
-const trimLeft = str => str.replace(/^\s*/g, "");  
+const trimLeft = str => str.replace(/^\s*/g, "");
 
 exec('git log --pretty=format:"[[%h]] [[%s]]%b"', (error, stdout, stderr) => {
   if (error) {
@@ -18,7 +19,6 @@ exec('git log --pretty=format:"[[%h]] [[%s]]%b"', (error, stdout, stderr) => {
   }
   const arr = stdout.replace(/\n\n/g, '\n', ).split('\n');
   const formatted = arr.map(item => {
-    // console.log(item);
     const matched = item.match(/\[\[(.+)\]\] \[\[(.+)\]\](.*)/);
     const hash = matched[1];
     const subject = matched[2];
@@ -42,15 +42,19 @@ exec('git log --pretty=format:"[[%h]] [[%s]]%b"', (error, stdout, stderr) => {
     };
   });
 
-  const TITLE = `${H1} Changelog`;
-  const RELEASE_TYPE = `${H2} Unreleased`;
-  const VERSION = `${H3} 0.1.0`;
+  const TITLE = `${H1} ${cfg.title || 'Changelog'}`;
+  const RELEASE_TYPE = `${H2} ${cfg.release_type || 'Unreleased'}`;
+  const VERSION = `${H3} ${cfg.version}`;
 
   const rawMd = formatted.map(f => {
     const title = types[f.type.toUpperCase()];
     return f.detail ? [`${title}\n`, `* ${f.content} (${f.hash})\n\n  *${f.detail}*\n`] : [`${title}\n`,`* ${f.content} (${f.hash})\n`];
   });
   const rmDup = new Set(flattenDeep(rawMd));
-  const md = [...rmDup];
-  fs.writeFileSync('CHANGELOG.md', md.join(''));
+  const md = [`${TITLE}\n`, `${RELEASE_TYPE}\n`, `${VERSION}\n`, ...rmDup];
+  fs.writeFile('CHANGELOG.md', md.join(''), (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+  });
 });
